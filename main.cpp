@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 
 // Definicje kolorów dla ANSI escape codes
 #define RED_TEXT "\033[1;31m"
@@ -10,7 +9,7 @@
 #define RESET_COLOR "\033[0m"
 
 
-void wczytywanie_danych(int rok[][1000], int miesiac[][1000], int dzien[][1000], double open[][1000], double high[][1000], double low[][1000], double close[][1000], double volume[][1000], int& rozszerzenie, int& indeks, double zaok_open[7][1000], double zaok_high[7][1000], double zaok_low[7][1000], double zaok_close[7][1000]) {
+void wczytywanie_danych(int rok[][1000], int miesiac[][1000], int dzien[][1000], float open[][1000], float high[][1000], float low[][1000], float close[][1000], float volume[][1000], int& rozszerzenie, int& indeks, float zaok_open[7][1000], float zaok_high[7][1000], float zaok_low[7][1000], float zaok_close[7][1000]) {
 	char wiersz[300];
 	int indeks_przecinka[5], indeks_kropki[5];
 	int korekta_kropki = 0;
@@ -286,38 +285,50 @@ void wczytywanie_danych(int rok[][1000], int miesiac[][1000], int dzien[][1000],
 	plik.close();
 }
 
-void rysowanie_wykresu(char obiekty[20][50][100], bool kolory[200][200], bool zielony[200][200], int wysokosc, int szerokosc, char os_wartosci[10][100], int nr_swiecy, double podzialka, double najwiekszy_high, double najmniejszy_low, bool kolory_os_wartosci[100], bool niebieski_wartosci[100]) {
+void rysowanie_wykresu(char obiekty[20][50][100], bool kolory[200][200], bool zielony[200][200], int wysokosc, int szerokosc, char os_wartosci[10][100], int nr_swiecy, float podzialka, float najwiekszy_high, float najmniejszy_low, bool kolory_os_wartosci[100], bool niebieski_wartosci[100], int dzien_os_czasu[2], int miesiac_os_czasu[2], int rok_os_czasu[2], int odczyty) {
 
 	std::ofstream zapis("chart.txt");
 
-	double napis_wartosci = najmniejszy_low + podzialka * wysokosc;
+	float napis_wartosci = najmniejszy_low + podzialka * wysokosc ;
 
 	for (int y = 0; y <= wysokosc + 1; y++) {
 
+		napis_wartosci = round(napis_wartosci * 10) / 10;
+		int proba_kontrolna = round(napis_wartosci * 10);
+
 		//std::cout << "Napis wartosci" << napis_wartosci << " " << napis_wartosci - round(napis_wartosci) << std::endl;
+		//std::cout << proba_kontrolna << std::endl;
 
 		if (kolory_os_wartosci[y] == true) {
 			std::cout << char(186);
 
 			if (napis_wartosci < 10) {
-				std::cout << "   ";
+				std::cout << "     ";
 			}
 			else if (napis_wartosci < 100) {
-				std::cout << "  ";
+				std::cout << "    ";
 			}
 			else if (napis_wartosci < 1000) {
-				std::cout << " ";
+				std::cout << "   ";
 			}
-
-			if (round(napis_wartosci - round(napis_wartosci)) == 0 || abs(napis_wartosci - round(napis_wartosci)) < 0.1) {
+			else if (napis_wartosci < 10000) {
 				std::cout << "  ";
+			}
+			else if (napis_wartosci < 100000) {
+				std::cout << " ";
 			}
 
 			if (niebieski_wartosci[y] == true) {
 				std::cout << BLUE_TEXT << napis_wartosci << RESET_COLOR;
+				if (proba_kontrolna % 10 == 0) {
+					std::cout << BLUE_TEXT << ".0" << RESET_COLOR;
+				}
 			}
 			else {
 				std::cout << MAGENTA_TEXT << napis_wartosci << RESET_COLOR;
+				if (proba_kontrolna % 10 == 0) {
+					std::cout << MAGENTA_TEXT << ".0" << RESET_COLOR;
+				}
 			}
 
 			napis_wartosci -= podzialka;
@@ -326,24 +337,31 @@ void rysowanie_wykresu(char obiekty[20][50][100], bool kolory[200][200], bool zi
 			std::cout << char(186);
 
 			if (napis_wartosci < 10) {
-				std::cout << "   ";
+				std::cout << "     ";
 			}
 			else if (napis_wartosci < 100) {
-				std::cout << "  ";
+				std::cout << "    ";
 			}
 			else if (napis_wartosci < 1000) {
-				std::cout << " ";
+				std::cout << "   ";
 			}
-			if (round(napis_wartosci - round(napis_wartosci)) == 0 || abs(napis_wartosci - round(napis_wartosci)) < 0.1) {
+			else if (napis_wartosci < 10000) {
 				std::cout << "  ";
+			}
+			else if (napis_wartosci < 100000) {
+				std::cout << " ";
 			}
 
 			std::cout << napis_wartosci;
 
+			if (proba_kontrolna % 10 == 0) {
+				std::cout << ".0";
+			}
+
 			napis_wartosci -= podzialka;
 		}
 		else {
-			for (int x = 0; x <= 6; x++) {
+			for (int x = 0; x <= 8; x++) {
 				std::cout << os_wartosci[x][y];
 			}
 		}
@@ -513,6 +531,59 @@ void rysowanie_wykresu(char obiekty[20][50][100], bool kolory[200][200], bool zi
 		zapis << std::endl;
 	}
 
+	std::cout << char(201);
+	for (int i = 1; i <= szerokosc + 9; i++) {
+		std::cout << char(205);
+	}
+	std::cout << char(187) << std::endl;
+
+	std::cout << char(186);
+	for (int i = 1; i < nr_swiecy; i++) {
+		std::cout << ' ';
+	}
+	std::cout << rok_os_czasu[0] << '-';
+	if (miesiac_os_czasu[0] < 10) {
+		std::cout << '0';
+	}
+	std::cout << miesiac_os_czasu[0] << '-';
+	if (dzien_os_czasu[0] < 10) {
+		std::cout << '0';
+	}
+	std::cout << dzien_os_czasu[0];
+	for (int i = szerokosc + 9; i > 9 + nr_swiecy; i--) {
+		std::cout << ' ';
+	}
+	std::cout << char(186) << std::endl;
+
+	if (odczyty > 1) {
+		std::cout << char(186);
+		for (int i = 1; i < nr_swiecy; i++) {
+			std::cout << ' ';
+		}
+		std::cout << rok_os_czasu[1] << '-';
+		if (miesiac_os_czasu[1] < 10) {
+			std::cout << '0';
+		}
+		std::cout << miesiac_os_czasu[1] << '-';
+		if (dzien_os_czasu[1] < 10) {
+			std::cout << '0';
+		}
+		std::cout << dzien_os_czasu[1];
+		for (int i = szerokosc + 9; i > 9 + nr_swiecy; i--) {
+			std::cout << ' ';
+		}
+		std::cout << char(186) << std::endl;
+	}
+
+	std::cout << char(200);
+	for (int i = 1; i <= szerokosc + 9; i++) {
+		std::cout << char(205);
+	}
+	std::cout << char(188);
+
+
+
+
 	zapis.close();
 }
 
@@ -559,12 +630,16 @@ void menu(char& ruch_uzytkownika) {
 	system("cls");
 }
 
-void tworzenie_swiecy_zielonej(double& robocze_low, double& robocze_high, double& robocze_close, double& robocze_open, int wysokosc, double podzialka, int nr_indeksu, char obiekty[20][50][100], bool kolory[200][200], bool zielony[200][200], int nr_swiecy, bool kolory_os_wartosci[100], bool niebieski_wartosci[100]) {
+void tworzenie_swiecy_zielonej(float& robocze_low, float& robocze_high, float& robocze_close, float& robocze_open, int wysokosc, float podzialka, int nr_indeksu, char obiekty[20][50][100], bool kolory[200][200], bool zielony[200][200], int nr_swiecy, bool kolory_os_wartosci[100], bool niebieski_wartosci[100]) {
 
 	int Y = wysokosc;
 	int ostatni_Y_ciala = -1;
 	bool koniec = false;
 	bool poczatek = true;
+
+		if (robocze_close > robocze_high) {
+		robocze_high = robocze_close;
+	}
 
 	while (koniec == false) {
 
@@ -629,6 +704,11 @@ void tworzenie_swiecy_zielonej(double& robocze_low, double& robocze_high, double
 									robocze_close = robocze_close - podzialka;
 									robocze_open = robocze_open - podzialka;
 									robocze_high = robocze_high - podzialka;
+
+									robocze_low = round(robocze_low * 10) / 10;
+									robocze_close = round(robocze_close * 10) / 10;
+									robocze_open = round(robocze_open * 10) / 10;
+									robocze_high = round(robocze_high * 10) / 10;
 									Y -= 1;
 								}
 							}
@@ -658,6 +738,11 @@ void tworzenie_swiecy_zielonej(double& robocze_low, double& robocze_high, double
 							robocze_close = robocze_close - podzialka;
 							robocze_open = robocze_open - podzialka;
 							robocze_high = robocze_high - podzialka;
+
+							robocze_low = round(robocze_low * 10) / 10;
+							robocze_close = round(robocze_close * 10) / 10;
+							robocze_open = round(robocze_open * 10) / 10;
+							robocze_high = round(robocze_high * 10) / 10;
 
 							Y -= 1;
 						}
@@ -701,6 +786,11 @@ void tworzenie_swiecy_zielonej(double& robocze_low, double& robocze_high, double
 					robocze_close = robocze_close - podzialka;
 					robocze_open = robocze_open - podzialka;
 					robocze_high = robocze_high - podzialka;
+
+					robocze_low = round(robocze_low * 10) / 10;
+					robocze_close = round(robocze_close * 10) / 10;
+					robocze_open = round(robocze_open * 10) / 10;
+					robocze_high = round(robocze_high * 10) / 10;
 					Y -= 1;
 				}
 			}
@@ -711,17 +801,26 @@ void tworzenie_swiecy_zielonej(double& robocze_low, double& robocze_high, double
 			robocze_close = robocze_close - podzialka;
 			robocze_open = robocze_open - podzialka;
 			robocze_high = robocze_high - podzialka;
+
+			robocze_low = round(robocze_low * 10) / 10;
+			robocze_close = round(robocze_close * 10) / 10;
+			robocze_open = round(robocze_open * 10) / 10;
+			robocze_high = round(robocze_high * 10) / 10;
 			Y -= 1;
 		}
 	}
 }
 
-void tworzenie_swiecy_czerwonej(double& robocze_low, double& robocze_high, double& robocze_close, double& robocze_open, int wysokosc, double podzialka, int nr_indeksu, char obiekty[20][50][100], bool kolory[200][200], bool zielony[200][200], int nr_swiecy, bool kolory_os_wartosci[100], bool niebieski_wartosci[100]) {
+void tworzenie_swiecy_czerwonej(float& robocze_low, float& robocze_high, float& robocze_close, float& robocze_open, int wysokosc, float podzialka, int nr_indeksu, char obiekty[20][50][100], bool kolory[200][200], bool zielony[200][200], int nr_swiecy, bool kolory_os_wartosci[100], bool niebieski_wartosci[100]) {
 
 	int Y = wysokosc;
 	int ostatni_Y_ciala = -1;
 	bool koniec = false;
 	bool poczatek = true;
+
+	if (robocze_open > robocze_high) {
+		robocze_high = robocze_open;
+	}
 
 	while (koniec == false) {
 
@@ -786,6 +885,11 @@ void tworzenie_swiecy_czerwonej(double& robocze_low, double& robocze_high, doubl
 									robocze_close = robocze_close - podzialka;
 									robocze_open = robocze_open - podzialka;
 									robocze_high = robocze_high - podzialka;
+
+									robocze_low = round(robocze_low * 10) / 10;
+									robocze_close = round(robocze_close * 10) / 10;
+									robocze_open = round(robocze_open * 10) / 10;
+									robocze_high = round(robocze_high * 10) / 10;
 									Y -= 1;
 								}
 							}
@@ -814,6 +918,11 @@ void tworzenie_swiecy_czerwonej(double& robocze_low, double& robocze_high, doubl
 							robocze_close = robocze_close - podzialka;
 							robocze_open = robocze_open - podzialka;
 							robocze_high = robocze_high - podzialka;
+
+							robocze_low = round(robocze_low * 10) / 10;
+							robocze_close = round(robocze_close * 10) / 10;
+							robocze_open = round(robocze_open * 10) / 10;
+							robocze_high = round(robocze_high * 10) / 10;
 
 							Y -= 1;
 						}
@@ -856,6 +965,11 @@ void tworzenie_swiecy_czerwonej(double& robocze_low, double& robocze_high, doubl
 					robocze_close = robocze_close - podzialka;
 					robocze_open = robocze_open - podzialka;
 					robocze_high = robocze_high - podzialka;
+
+					robocze_low = round(robocze_low * 10) / 10;
+					robocze_close = round(robocze_close * 10) / 10;
+					robocze_open = round(robocze_open * 10) / 10;
+					robocze_high = round(robocze_high * 10) / 10;
 					Y -= 1;
 				}
 			}
@@ -866,16 +980,21 @@ void tworzenie_swiecy_czerwonej(double& robocze_low, double& robocze_high, doubl
 			robocze_close = robocze_close - podzialka;
 			robocze_open = robocze_open - podzialka;
 			robocze_high = robocze_high - podzialka;
+
+			robocze_low = round(robocze_low * 10) / 10;
+			robocze_close = round(robocze_close * 10) / 10;
+			robocze_open = round(robocze_open * 10) / 10;
+			robocze_high = round(robocze_high * 10) / 10;
 			Y -= 1;
 		}
 	}
 }
 
 
-void uzupelnianie_wykresu(double open[7][1000], double high[7][1000], double low[7][1000], double close[7][1000], double volume[7][1000], double zaok_open[7][1000], double zaok_high[7][1000], double zaok_low[7][1000], double zaok_close[7][1000], bool zielony[200][200], bool kolory[200][200], char obiekty[20][50][100], int wysokosc, int szerokosc, int odczyty, int indeksy_konca_poczatku[2], int rozszerzenia_konca_poczatku[2], char os_wartosci[10][100], bool wartosci[100], int nr_swiecy, double& podzialka, bool kolory_os_wartosci[100], bool niebieski_wartosci[100], double& najwiekszy_high, double& najmniejszy_low) {
+void uzupelnianie_wykresu(float open[7][1000], float high[7][1000], float low[7][1000], float close[7][1000], float volume[7][1000], float zaok_open[7][1000], float zaok_high[7][1000], float zaok_low[7][1000], float zaok_close[7][1000], bool zielony[200][200], bool kolory[200][200], char obiekty[20][50][100], int wysokosc, int szerokosc, int odczyty, int indeksy_konca_poczatku[2], int rozszerzenia_konca_poczatku[2], char os_wartosci[10][100], bool wartosci[100], int nr_swiecy, float& podzialka, bool kolory_os_wartosci[100], bool niebieski_wartosci[100], float& najwiekszy_high, float& najmniejszy_low, int dzien_os_czasu[2], int miesiac_os_czasu[2], int rok_os_czasu[2], int rok[7][1000], int miesiac[7][1000], int dzien[7][1000], int& odstep) {
 
 	najwiekszy_high = high[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0]];
-	najmniejszy_low = low[rozszerzenia_konca_poczatku[1]][indeksy_konca_poczatku[1]];
+	najmniejszy_low = low[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0]];
 
 	int dodatkowy_indeks = round(szerokosc / 50) + 1;
 
@@ -901,11 +1020,12 @@ void uzupelnianie_wykresu(double open[7][1000], double high[7][1000], double low
 		licznik += 1;
 	}
 
-	std::cout << "sprawdzone miejsca: " << licznik << std::endl;
+	najmniejszy_low = round(najmniejszy_low * 10) / 10;
 
-	std::cout << "Min: " << najmniejszy_low << std::endl;
-	std::cout << "Max: " << najwiekszy_high << std::endl;
-	std::cout << "roznica: " << najwiekszy_high - najmniejszy_low << std::endl << std::endl;
+	//std::cout << "sprawdzone miejsca: " << licznik << std::endl;
+	//std::cout << "Min: " << najmniejszy_low << std::endl;
+	//std::cout << "Max: " << najwiekszy_high << std::endl;
+	//std::cout << "roznica: " << najwiekszy_high - najmniejszy_low << std::endl << std::endl;
 
 	podzialka = (najwiekszy_high - najmniejszy_low) / wysokosc;
 
@@ -914,8 +1034,6 @@ void uzupelnianie_wykresu(double open[7][1000], double high[7][1000], double low
 	if ((najwiekszy_high - najmniejszy_low) / podzialka > wysokosc) {
 		podzialka += 0.1;
 	}
-
-	std::cout << podzialka << std::endl;
 
 	//puste pola
 
@@ -957,10 +1075,10 @@ void uzupelnianie_wykresu(double open[7][1000], double high[7][1000], double low
 
 		int nr_indeksu_backup = nr_indeksu * odczyty + indeksy_konca_poczatku[0];
 
-		double robocze_open = 0;
-		double robocze_high = 0;
-		double robocze_low = 100000;
-		double robocze_close = 0;
+		float robocze_open = 0;
+		float robocze_high = 0;
+		float robocze_low = 100000;
+		float robocze_close = 0;
 
 		if (nr_indeksu_backup < 1000) {
 			rozszerzenie = rozszerzenia_konca_poczatku[0];
@@ -997,15 +1115,30 @@ void uzupelnianie_wykresu(double open[7][1000], double high[7][1000], double low
 
 		if (nr_indeksu_backup - odczyty + 1 < 0) {
 			robocze_open = zaok_open[rozszerzenie - 1][1000 + (nr_indeksu_backup - odczyty + 1)] - najmniejszy_low;
+			if (nr_indeksu == nr_swiecy) {
+				dzien_os_czasu[0] = dzien[rozszerzenie - 1][1000 + (nr_indeksu_backup - odczyty + 1)];
+				miesiac_os_czasu[0] = miesiac[rozszerzenie - 1][1000 + (nr_indeksu_backup - odczyty + 1)];
+				rok_os_czasu[0] = rok[rozszerzenie - 1][1000 + (nr_indeksu_backup - odczyty + 1)];
+			}
 		}
 		else {
 			robocze_open = zaok_open[rozszerzenie][nr_indeksu_backup - odczyty + 1] - najmniejszy_low;
+			if (nr_indeksu == nr_swiecy) {
+				dzien_os_czasu[0] = dzien[rozszerzenie][nr_indeksu_backup - odczyty + 1];
+				miesiac_os_czasu[0] = miesiac[rozszerzenie][nr_indeksu_backup - odczyty + 1];
+				rok_os_czasu[0] = rok[rozszerzenie][nr_indeksu_backup - odczyty + 1];
+			}
 		}
 
 		robocze_close = zaok_close[rozszerzenie][nr_indeksu_backup] - najmniejszy_low;
+		if (nr_indeksu == nr_swiecy) {
+			dzien_os_czasu[1] = dzien[rozszerzenie][nr_indeksu_backup];
+			miesiac_os_czasu[1] = miesiac[rozszerzenie][nr_indeksu_backup];
+			rok_os_czasu[1] = rok[rozszerzenie][nr_indeksu_backup];
+		}
 
 
-		for (int i = odczyty; i >= 0; i--) {
+		for (int i = odczyty - 1; i >= 0; i--) {
 
 			if (nr_indeksu_backup - i < 0) {
 
@@ -1013,7 +1146,7 @@ void uzupelnianie_wykresu(double open[7][1000], double high[7][1000], double low
 					robocze_low = zaok_low[rozszerzenie - 1][1000 + (nr_indeksu_backup - i)] - najmniejszy_low;
 				}
 				if (zaok_high[rozszerzenie - 1][1000 + (nr_indeksu_backup - i)] - najmniejszy_low > robocze_high) {
-					robocze_high = zaok_high[rozszerzenie][1000 + (nr_indeksu_backup - i)] - najmniejszy_low;
+					robocze_high = zaok_high[rozszerzenie - 1][1000 + (nr_indeksu_backup - i)] - najmniejszy_low;
 				}
 			}
 
@@ -1052,8 +1185,8 @@ void uzupelnianie_wykresu(double open[7][1000], double high[7][1000], double low
 
 	//tworzenie ramki
 
-	obiekty[0][0][0] = char(201);
-	obiekty[0][0][wysokosc + 1] = char(200);
+	obiekty[0][0][0] = char(203);
+	obiekty[0][0][wysokosc + 1] = char(202);
 
 	if (szerokosc < 50) {
 		obiekty[0][szerokosc + 1][wysokosc + 1] = char(188);
@@ -1137,18 +1270,20 @@ void uzupelnianie_wykresu(double open[7][1000], double high[7][1000], double low
 		os_wartosci[0][Y] = char(186);
 	}
 
-	os_wartosci[1][0] = char(205);
-	os_wartosci[2][0] = char(205);
-	os_wartosci[3][0] = char(205);
-	os_wartosci[4][0] = char(205);
-	os_wartosci[5][0] = char(205);
-	os_wartosci[6][0] = char(205);
-	os_wartosci[1][wysokosc + 1] = char(205);
-	os_wartosci[2][wysokosc + 1] = char(205);
-	os_wartosci[3][wysokosc + 1] = char(205);
-	os_wartosci[4][wysokosc + 1] = char(205);
-	os_wartosci[5][wysokosc + 1] = char(205);
-	os_wartosci[6][wysokosc + 1] = char(205);
+
+	for (int i = 1; i <= 8; i++) {
+		os_wartosci[i][0] = char(205);
+		os_wartosci[i][wysokosc + 1] = char(205);
+	}
+
+	// odstep
+
+	if (szerokosc - 90 <= 0) {
+		odstep = 0;
+	}
+	else {
+		odstep = round((szerokosc - 90) / 2);
+	}
 }
 
 void powitanie() {
@@ -1243,7 +1378,7 @@ void napis_Gielda(int odstep) {
 	std::cout << char(188) << std::endl;
 }
 
-void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok, int& pierwszy_miesiac, int& pierwszy_dzien, int& ostatni_rok, int& ostatni_miesiac, int& ostatni_dzien, int rok[7][1000], int miesiac[7][1000], int dzien[7][1000], int& odstep, int indeksy_konca_poczatku[2], int rozszerzenia_konca_poczatku[2], bool& blad_konfiguracji) {
+void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok, int& pierwszy_miesiac, int& pierwszy_dzien, int& ostatni_rok, int& ostatni_miesiac, int& ostatni_dzien, int rok[7][1000], int miesiac[7][1000], int dzien[7][1000], int indeksy_konca_poczatku[2], int rozszerzenia_konca_poczatku[2], bool& blad_konfiguracji) {
 
 	char kontynuacja;
 
@@ -1261,8 +1396,9 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 
 	system("cls");
 
-	if (wysokosc > 90) {
-		std::cout << "Wpisz wartosc mniejsza od 91: " << std::endl;
+
+	while (wysokosc < 0 || wysokosc > 91) {
+		std::cout << "Podaj wysokosc z zakresu od 1 do 90: ";
 		while (true) {
 			if (std::cin >> wysokosc) {
 				break;
@@ -1270,21 +1406,7 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 			else {
 				std::cin.clear();
 				std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-				std::cout << "Nieprawidlowe dane. Wprowadz liczbe jeszcze raz." << std::endl;
-			}
-		}
-
-		while (wysokosc > 90) {
-			std::cout << "Podaj wysokosc wykresu: ";
-			while (true) {
-				if (std::cin >> wysokosc) {
-					break;
-				}
-				else {
-					std::cin.clear();
-					std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-					std::cout << "Nieprawidlowe dane. Wprowadz liczbe jeszcze raz." << std::endl;
-				}
+				std::cout << "Podaj wysokosc z zakresu od 1 do 90: ";
 			}
 		}
 	}
@@ -1536,11 +1658,97 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 
 			system("cls");
 
-			std::cout << "Podaj z ilu odczytow ma skladac sie swieca: ";
+
+			int nr_wyboru = 1;
 
 			while (true) {
-				if (std::cin >> odczyty) {
+				std::cout << "By zatwierdzić wybrany tryb wpis dowolna liczbe" << std::endl;
+				std::cout << "W trybie 1. mozna od razu wpisac wartosc" << std::endl;
+				std::cout << "Zmiana trybu '-1'" << std::endl;
+				std::cout << "Tryb odczytow:" << std::endl << std::endl;
+
+				std::cout << char(201) << char(205) << char(205) << char(205) << char(203);
+				for (int i = 0; i < 20; i++) {
+					std::cout << char(205);
+				}
+				std::cout << char(187) << std::endl;
+
+				for (int i = 1; i <= 3; i++) {
+
+					if (nr_wyboru == i) {
+						std::cout << "| * |";
+					}
+					else {
+						std::cout << "|   |";
+					}
+
+					if (i == 1) {
+						std::cout << " 1. niestandardowe  |" << std::endl;
+					}
+					else if (i == 2) {
+						std::cout << " 2. tryb miesieczny |" << std::endl;
+					}
+					else {
+						std::cout << " 3. tryb tygodniowy |" << std::endl;
+					}
+
+					if (i != 3) {
+						std::cout << char(204) << char(205) << char(205) << char(205) << char(206);
+						for (int i = 0; i < 20; i++) {
+							std::cout << char(205);
+						}
+						std::cout << char(185) << std::endl;
+					}
+				}
+
+				std::cout << char(200) << char(205) << char(205) << char(205) << char(202);
+				for (int i = 0; i < 20; i++) {
+					std::cout << char(205);
+				}
+				std::cout << char(188) << std::endl;
+
+				std::cout << std::endl << "Wpisz tryb: ";
+				while (true) {
+					if (std::cin >> odczyty) {
+						break;
+					}
+					else {
+						std::cin.clear();
+						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+						std::cout << "Nieprawidlowe dane. Wprowadz liczbe jeszcze raz." << std::endl;
+					}
+				}
+
+				if (odczyty == -1) {
+					nr_wyboru += 1;
+					if (nr_wyboru > 3) {
+						nr_wyboru = 1;
+					}
+				}
+
+				else if (nr_wyboru == 1) {
 					break;
+				}
+
+				else if (nr_wyboru == 2) {
+					odczyty = 20;
+					break;
+				}
+
+				else {
+					odczyty = 5;
+					break;
+				}
+
+				system("cls");
+			}
+
+			system("cls");
+
+			while (odczyty > 31 || odczyty < 1) {
+				std::cout << "Liczba odczytow musi nalezec do przedzialu [1-31]: " << std::endl;
+
+				if (std::cin >> odczyty) {
 				}
 				else {
 					std::cin.clear();
@@ -1551,12 +1759,22 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 
 			while (odczyty > zakres_dat) {
 				std::cout << "Podane odczyty sa wieksze niz zakres danych, prosze podac odczyty mniejsze od: " << odczyty + 1 << std::endl;
+				while (true) {
+					if (std::cin >> odczyty) {
+						break;
+					}
+					else {
+						std::cin.clear();
+						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+						std::cout << "Nieprawidlowe dane. Wprowadz liczbe jeszcze raz." << std::endl;
+					}
+				}
 			}
 
 
-			if (zakres_dat % odczyty != 0) {
+			if (zakres_dat % odczyty != 0 && odczyty == 1) {
 				std::cout << std::endl << "Zakres dat nie jest podzelny przez " << odczyty << ", czy jestes pewny tego wyboru?" << std::endl;
-				std::cout << "Ostatnia swieca w tym wykresie moze skladac sie z mniejscej liczby odczytow." << std::endl;
+				std::cout << "Ostatnia swieca w tym wykresie moze skladac sie z mniejszej liczby odczytow." << std::endl;
 				std::cout << "By potwierdzic wpisz ta sama wartosc, mozesz takze zmienic ilosc odczytow." << std::endl << std::endl;
 				std::cout << "Podaj z ilu odczytow ma skladac sie swieca: ";
 				while (true) {
@@ -1571,12 +1789,6 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 				}
 			}
 
-
-			if (odczyty > 31) {
-				std::cout << "Liczba odczytow byla zbyt wielka, liczba odczytow zostala zmieniona na: 31" << std::endl;
-				odczyty = 31;
-			}
-
 			szerokosc = round(zakres_dat / odczyty);
 
 			if (szerokosc > 148) {
@@ -1586,20 +1798,58 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 
 				std::cout << pierwszy_rok << "-" << pierwszy_miesiac << "-" << pierwszy_dzien << std::endl;
 
-				if (indeksy_konca_poczatku[0] + zakres_dat - 1 < 1000) {
-					std::cout << rok[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat - 1] << "-" << miesiac[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat - 1] << "-" << dzien[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat - 1] << std::endl;
-					indeksy_konca_poczatku[1] = zakres_dat - 1;
+				if (indeksy_konca_poczatku[0] + zakres_dat < 1000) {
+					std::cout << rok[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat ] << "-" << miesiac[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat] << "-" << dzien[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat ] << std::endl;
+					ostatni_rok = rok[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat];
+					ostatni_miesiac = miesiac[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat];
+					ostatni_dzien = dzien[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat];
+					indeksy_konca_poczatku[1] = zakres_dat;
+				}
+				else if (indeksy_konca_poczatku[0] + zakres_dat < 2000) {
+					std::cout << rok[rozszerzenia_konca_poczatku[0] + 1][indeksy_konca_poczatku[0] + zakres_dat - 1000] << "-" << miesiac[rozszerzenia_konca_poczatku[0] + 1][indeksy_konca_poczatku[0] + zakres_dat - 1000] << "-" << dzien[rozszerzenia_konca_poczatku[0] + 1][indeksy_konca_poczatku[0] + zakres_dat - 1000] << std::endl;
+					ostatni_rok = rok[rozszerzenia_konca_poczatku[0] + 1][indeksy_konca_poczatku[0] + zakres_dat - 1000];
+					ostatni_miesiac = miesiac[rozszerzenia_konca_poczatku[0] + 1][indeksy_konca_poczatku[0] + zakres_dat - 1000];
+					ostatni_dzien = dzien[rozszerzenia_konca_poczatku[0] + 1][indeksy_konca_poczatku[0] + zakres_dat - 1000];
+					indeksy_konca_poczatku[1] = zakres_dat - 1000;
+					rozszerzenia_konca_poczatku[1] = rozszerzenia_konca_poczatku[0] + 1;
+				}
+				else if(indeksy_konca_poczatku[0] + zakres_dat < 3000) {
+					std::cout << rok[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000] << "-" << miesiac[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000] << "-" << dzien[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000] << std::endl;
+					ostatni_rok = rok[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000];
+					ostatni_miesiac = miesiac[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000];
+					ostatni_dzien = dzien[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000];
+					indeksy_konca_poczatku[1] = zakres_dat - 2000;
+					rozszerzenia_konca_poczatku[1] = rozszerzenia_konca_poczatku[0] + 2;
+				}
+				else if (indeksy_konca_poczatku[0] + zakres_dat < 4000) {
+					std::cout << rok[rozszerzenia_konca_poczatku[0] + 3][indeksy_konca_poczatku[0] + zakres_dat - 3000] << "-" << miesiac[rozszerzenia_konca_poczatku[0] + 3][indeksy_konca_poczatku[0] + zakres_dat - 3000] << "-" << dzien[rozszerzenia_konca_poczatku[0] + 3][indeksy_konca_poczatku[0] + zakres_dat - 3000] << std::endl;
+					ostatni_rok = rok[rozszerzenia_konca_poczatku[0] + 3][indeksy_konca_poczatku[0] + zakres_dat - 3000];
+					ostatni_miesiac = miesiac[rozszerzenia_konca_poczatku[0] + 3][indeksy_konca_poczatku[0] + zakres_dat - 3000];
+					ostatni_dzien = dzien[rozszerzenia_konca_poczatku[0] + 3][indeksy_konca_poczatku[0] + zakres_dat - 3000];
+					indeksy_konca_poczatku[1] = zakres_dat - 3000;
+					rozszerzenia_konca_poczatku[1] = rozszerzenia_konca_poczatku[0] + 3;
+				}
+				else if (indeksy_konca_poczatku[0] + zakres_dat < 5000) {
+					std::cout << rok[rozszerzenia_konca_poczatku[0] + 4][indeksy_konca_poczatku[0] + zakres_dat - 4000] << "-" << miesiac[rozszerzenia_konca_poczatku[0] + 4][indeksy_konca_poczatku[0] + zakres_dat - 4000] << "-" << dzien[rozszerzenia_konca_poczatku[0] + 4][indeksy_konca_poczatku[0] + zakres_dat - 4000] << std::endl;
+					ostatni_rok = rok[rozszerzenia_konca_poczatku[0] + 4][indeksy_konca_poczatku[0] + zakres_dat - 4000];
+					ostatni_miesiac = miesiac[rozszerzenia_konca_poczatku[0] + 4][indeksy_konca_poczatku[0] + zakres_dat - 4000];
+					ostatni_dzien = dzien[rozszerzenia_konca_poczatku[0] + 4][indeksy_konca_poczatku[0] + zakres_dat - 4000];
+					indeksy_konca_poczatku[1] = zakres_dat - 4000;
+					rozszerzenia_konca_poczatku[1] = rozszerzenia_konca_poczatku[0] + 4;
 				}
 				else {
-					std::cout << rok[rozszerzenia_konca_poczatku[0] + 1][indeksy_konca_poczatku[0] + zakres_dat - 1001] << "-" << miesiac[rozszerzenia_konca_poczatku[0] + 1][indeksy_konca_poczatku[0] + zakres_dat - 1001] << "-" << dzien[rozszerzenia_konca_poczatku[0] + 1][indeksy_konca_poczatku[0] + zakres_dat - 1001] << std::endl;
-					indeksy_konca_poczatku[1] = zakres_dat - 1001;
-					rozszerzenia_konca_poczatku[1] = rozszerzenia_konca_poczatku[1] + 1;
+					std::cout << rok[rozszerzenia_konca_poczatku[0] + 5][indeksy_konca_poczatku[0] + zakres_dat - 5000] << "-" << miesiac[rozszerzenia_konca_poczatku[0] + 5][indeksy_konca_poczatku[0] + zakres_dat - 5000] << "-" << dzien[rozszerzenia_konca_poczatku[0] + 5][indeksy_konca_poczatku[0] + zakres_dat - 5000] << std::endl;
+					ostatni_rok = rok[rozszerzenia_konca_poczatku[0] + 5][indeksy_konca_poczatku[0] + zakres_dat - 5000];
+					ostatni_miesiac = miesiac[rozszerzenia_konca_poczatku[0] + 5][indeksy_konca_poczatku[0] + zakres_dat - 5000];
+					ostatni_dzien = dzien[rozszerzenia_konca_poczatku[0] + 5][indeksy_konca_poczatku[0] + zakres_dat - 5000];
+					indeksy_konca_poczatku[1] = zakres_dat - 5000;
+					rozszerzenia_konca_poczatku[1] = rozszerzenia_konca_poczatku[0] + 5;
 				}
 
 				szerokosc = 148;
 			}
 
-			std::cout << "By kontynowac wpisz dowolny znak: ";
+			std::cout << std::endl << "By kontynowac wpisz dowolny znak: ";
 			std::cin >> kontynuacja;
 
 
@@ -1608,22 +1858,22 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 
 
 			std::cout << char(201);
-			for (int i = 0; i < 30; i++) {
+			for (int i = 0; i <= 30; i++) {
 				std::cout << char(205);
 			}
 			std::cout << char(187) << std::endl;
 
-			std::cout << char(186) << " Parametry wykresu:           " << char(186) << std::endl;
+			std::cout << char(186) << " Parametry wykresu:            " << char(186) << std::endl;
 
-			std::cout << char(186) << "                              " << char(186) << std::endl;
+			std::cout << char(186) << "                               " << char(186) << std::endl;
 
 			std::cout << char(186) << " Wysokosc: " << wysokosc;
 			if (wysokosc / 10 < 1) {
 				std::cout << ' ';
 			}
-			std::cout << "                 " << char(186) << std::endl;
+			std::cout << "                  " << char(186) << std::endl;
 
-			std::cout << char(186) << "                              " << char(186) << std::endl;
+			std::cout << char(186) << "                               " << char(186) << std::endl;
 
 			std::cout << char(186) << " Szerokosc: " << szerokosc;
 			if (szerokosc / 10 < 1) {
@@ -1632,11 +1882,11 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 			else if (szerokosc / 100 < 1) {
 				std::cout << ' ';
 			}
-			std::cout << "               " << char(186) << std::endl;
+			std::cout << "                " << char(186) << std::endl;
 
-			std::cout << char(186) << "                              " << char(186) << std::endl;
+			std::cout << char(186) << "                               " << char(186) << std::endl;
 
-			std::cout << char(186) << " Zakres czasowy:              " << char(186) << std::endl;
+			std::cout << char(186) << " Zakres czasowy:               " << char(186) << std::endl;
 
 			std::cout << char(186) << " Od " << pierwszy_rok << "-" << pierwszy_miesiac << "-" << pierwszy_dzien << " do " << ostatni_rok << "-" << ostatni_miesiac << "-" << ostatni_dzien;
 			if (pierwszy_miesiac / 10 < 1) {
@@ -1651,18 +1901,18 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 			if (ostatni_dzien / 10 < 1) {
 				std::cout << ' ';
 			}
-			std::cout << "  " << char(186) << std::endl;
+			std::cout << "   " << char(186) << std::endl;
 
-			std::cout << char(186) << "                              " << char(186) << std::endl;
+			std::cout << char(186) << "                               " << char(186) << std::endl;
 
-			std::cout << char(186) << " Swieca sklada sie z: " << odczyty;
+			std::cout << char(186) << " Odczyty tworzace 1 swiece: " << odczyty;
 			if (odczyty / 10 < 1) {
 				std::cout << ' ';
 			}
-			std::cout << "      " << char(186) << std::endl;
+			std::cout << " " << char(186) << std::endl;
 
 			std::cout << char(200);
-			for (int i = 0; i < 30; i++) {
+			for (int i = 0; i <= 30; i++) {
 				std::cout << char(205);
 			}
 			std::cout << char(188) << std::endl;
@@ -1671,23 +1921,16 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 			std::cin >> kontynuacja;
 
 			system("cls");
-
-			if (szerokosc - 99 <= 0) {
-				odstep = 0;
-			}
-			else {
-				odstep = round((szerokosc - 99) / 2);
-			}
 		}
 	}
 }
 
 void ostatnia_tabelka(char& ruch_uzytkownika, int szerokosc, int& odstep) {
-	if (szerokosc - 50 <= 0) {
+	if (szerokosc - 41 <= 0) {
 		odstep = 0;
 	}
 	else {
-		odstep = round((szerokosc - 50) / 2);
+		odstep = round((szerokosc - 41) / 2);
 	}
 
 	std::cout << std::endl;
@@ -1702,9 +1945,13 @@ void ostatnia_tabelka(char& ruch_uzytkownika, int szerokosc, int& odstep) {
 
 	std::cout << char(187) << std::endl;
 	spacje(odstep);
+	std::cout << char(186) << "      By przywolac menu wcisnij klawisz 'm'       " << char(186) << std::endl;
+	spacje(odstep);
 	std::cout << char(186) << "   By zakonczyc dzialanie programu wcisnij 'q'.   " << char(186) << std::endl;
 	spacje(odstep);
-	std::cout << char(186) << "      By przywolac menu wcisnij klawisz 'm'       " << char(186) << std::endl;
+	std::cout << char(186) << "  By zmienic wybrana swiece wcisnij 'a' lub 'd'   " << char(186) << std::endl;
+	spacje(odstep);
+	std::cout << char(186) << "  By wpisac indeks konkretnej swiecy wcisnij 'i'  " << char(186) << std::endl;
 	spacje(odstep);
 	std::cout << char(186) << "   By kontynuowac wcisnij dowolny inny klawisz.   " << char(186) << std::endl;
 	spacje(odstep);
@@ -1727,26 +1974,27 @@ void ostatnia_tabelka(char& ruch_uzytkownika, int szerokosc, int& odstep) {
 void program(char& ruch_uzytkownika) {
 
 	int rok[7][1000], miesiac[7][1000], dzien[7][1000];
-	double open[7][1000], high[7][1000], low[7][1000], close[7][1000], volume[7][1000];
-	double zaok_open[7][1000], zaok_high[7][1000], zaok_low[7][1000], zaok_close[7][1000];
+	float open[7][1000], high[7][1000], low[7][1000], close[7][1000], volume[7][1000];
+	float zaok_open[7][1000], zaok_high[7][1000], zaok_low[7][1000], zaok_close[7][1000];
 
 	int rozszerzenie = 0;
 	int indeks = -1;
 
-	double najwiekszy_high, najmniejszy_low;
+	float najwiekszy_high, najmniejszy_low;
 	char obiekty[20][50][100];
-	char os_wartosci[10][100], os_czasu[200][3];
+	char os_wartosci[10][100];
 	bool wartosci[100];
 	bool zielony[200][200], kolory[200][200];
 	bool kolory_os_wartosci[100], niebieski_wartosci[100];
 	int nr_swiecy = 1;
+	int dzien_os_czasu[2], miesiac_os_czasu[2], rok_os_czasu[2];
 
 	int wysokosc, szerokosc = 0, odczyty, pierwszy_rok, pierwszy_miesiac, pierwszy_dzien, ostatni_rok, ostatni_miesiac, ostatni_dzien;
 	int indeksy_konca_poczatku[2], rozszerzenia_konca_poczatku[2];
 	bool blad_konfiguracji = false;
 
 	int odstep = 9;
-	double podzialka;
+	float podzialka;
 
 	napis_Gielda(odstep);
 
@@ -1757,33 +2005,33 @@ void program(char& ruch_uzytkownika) {
 	if (ruch_uzytkownika == 'g' || ruch_uzytkownika == 'G') {
 		wczytywanie_danych(rok, miesiac, dzien, open, high, low, close, volume, rozszerzenie, indeks, zaok_open, zaok_high, zaok_low, zaok_close);
 
-		konfiguracja(wysokosc, szerokosc, odczyty, pierwszy_rok, pierwszy_miesiac, pierwszy_dzien, ostatni_rok, ostatni_miesiac, ostatni_dzien, rok, miesiac, dzien, odstep, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, blad_konfiguracji);
+		konfiguracja(wysokosc, szerokosc, odczyty, pierwszy_rok, pierwszy_miesiac, pierwszy_dzien, ostatni_rok, ostatni_miesiac, ostatni_dzien, rok, miesiac, dzien, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, blad_konfiguracji);
 
 		if (blad_konfiguracji == false) {
-			uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low);
+			uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, rok, miesiac, dzien, odstep);
 			napis_Gielda(odstep);
-			rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci);
+			rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, odczyty);
 
 			ostatnia_tabelka(ruch_uzytkownika, szerokosc, odstep);
 
-			while (ruch_uzytkownika == 'a' || ruch_uzytkownika == 'd' || ruch_uzytkownika == 'A' || ruch_uzytkownika == 'D') {
+			while (ruch_uzytkownika == 'a' || ruch_uzytkownika == 'd' || ruch_uzytkownika == 'A' || ruch_uzytkownika == 'D' || ruch_uzytkownika == 'i' || ruch_uzytkownika == 'I') {
 				if (ruch_uzytkownika == 'a' || ruch_uzytkownika == 'A') {
 					if (nr_swiecy - 1 <= 0) {
 						nr_swiecy = szerokosc;
 
 						system("cls");
-						uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low);
+						uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, rok, miesiac, dzien, odstep);
 						napis_Gielda(odstep);
-						rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci);
+						rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, odczyty);
 						ostatnia_tabelka(ruch_uzytkownika, szerokosc, odstep);
 					}
 					else {
 						nr_swiecy -= 1;
 
 						system("cls");
-						uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low);
+						uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, rok, miesiac, dzien, odstep);
 						napis_Gielda(odstep);
-						rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci);
+						rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, odczyty);
 						ostatnia_tabelka(ruch_uzytkownika, szerokosc, odstep);
 					}
 				}
@@ -1792,20 +2040,36 @@ void program(char& ruch_uzytkownika) {
 						nr_swiecy = 1;
 
 						system("cls");
-						uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low);
+						uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, rok, miesiac, dzien, odstep);
 						napis_Gielda(odstep);
-						rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci);
+						rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, odczyty);
 						ostatnia_tabelka(ruch_uzytkownika, szerokosc, odstep);
 					}
 					else {
 						nr_swiecy += 1;
 
 						system("cls");
-						uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low);
+						uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, rok, miesiac, dzien, odstep);
 						napis_Gielda(odstep);
-						rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci);
+						rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, odczyty);
 						ostatnia_tabelka(ruch_uzytkownika, szerokosc, odstep);
 					}
+				}
+
+				if (ruch_uzytkownika == 'i' || ruch_uzytkownika == 'I') {
+					std::cout << "Wpisz indeks swiecy: " << std::endl;
+					std::cin >> nr_swiecy;
+
+					while (nr_swiecy < 1 || nr_swiecy > szerokosc) {
+						std::cout << "Indeks swiecy musi byc liczba z przedzialu od 1 do " << szerokosc << std::endl;
+						std::cin >> nr_swiecy;
+					}
+
+					system("cls");
+					uzupelnianie_wykresu(open, high, low, close, volume, zaok_open, zaok_high, zaok_low, zaok_close, zielony, kolory, obiekty, wysokosc, szerokosc, odczyty, indeksy_konca_poczatku, rozszerzenia_konca_poczatku, os_wartosci, wartosci, nr_swiecy, podzialka, kolory_os_wartosci, niebieski_wartosci, najwiekszy_high, najmniejszy_low, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, rok, miesiac, dzien, odstep);
+					napis_Gielda(odstep);
+					rysowanie_wykresu(obiekty, kolory, zielony, wysokosc, szerokosc, os_wartosci, nr_swiecy, podzialka, najwiekszy_high, najmniejszy_low, kolory_os_wartosci, niebieski_wartosci, dzien_os_czasu, miesiac_os_czasu, rok_os_czasu, odczyty);
+					ostatnia_tabelka(ruch_uzytkownika, szerokosc, odstep);
 				}
 			}
 		}
