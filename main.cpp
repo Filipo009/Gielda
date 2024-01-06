@@ -289,11 +289,12 @@ void rysowanie_wykresu(char obiekty[20][50][100], bool kolory[200][200], bool zi
 
 	std::ofstream zapis("chart.txt");
 
-	float napis_wartosci = najmniejszy_low + podzialka * wysokosc ;
+	float napis_wartosci = najmniejszy_low + podzialka * wysokosc;
 
 	for (int y = 0; y <= wysokosc + 1; y++) {
 
 		napis_wartosci = round(napis_wartosci * 10) / 10;
+
 		int proba_kontrolna = round(napis_wartosci * 10);
 
 		//std::cout << "Napis wartosci" << napis_wartosci << " " << napis_wartosci - round(napis_wartosci) << std::endl;
@@ -630,16 +631,13 @@ void menu(char& ruch_uzytkownika) {
 	system("cls");
 }
 
-void tworzenie_swiecy_zielonej(float& robocze_low, float& robocze_high, float& robocze_close, float& robocze_open, int wysokosc, float podzialka, int nr_indeksu, char obiekty[20][50][100], bool kolory[200][200], bool zielony[200][200], int nr_swiecy, bool kolory_os_wartosci[100], bool niebieski_wartosci[100]) {
+void tworzenie_swiecy(float& robocze_low, float& robocze_high, float& robocze_close, float& robocze_open, int wysokosc, float podzialka, int nr_indeksu, char obiekty[20][50][100], bool kolory[200][200], bool zielony[200][200], int nr_swiecy, bool kolory_os_wartosci[100], bool niebieski_wartosci[100], bool czerwona) {
+
 
 	int Y = wysokosc;
 	int ostatni_Y_ciala = -1;
 	bool koniec = false;
 	bool poczatek = true;
-
-		if (robocze_close > robocze_high) {
-		robocze_high = robocze_close;
-	}
 
 	while (koniec == false) {
 
@@ -647,13 +645,13 @@ void tworzenie_swiecy_zielonej(float& robocze_low, float& robocze_high, float& r
 
 			while (koniec == false) {
 
-				if (robocze_open >= 0 && robocze_open < podzialka) {
+				if ((robocze_open >= 0 && robocze_open < podzialka && czerwona == false) || (robocze_close >= 0 && robocze_close < podzialka && czerwona == true)) {
 
 					while (koniec == false) {
 
 						ostatni_Y_ciala = Y;
 
-						if (robocze_close >= 0 && robocze_close < podzialka) {
+						if ((robocze_close >= 0 && robocze_close < podzialka && czerwona == false) || (robocze_open >= 0 && robocze_open < podzialka && czerwona == true)) {
 
 							while (koniec == false) {
 
@@ -671,11 +669,21 @@ void tworzenie_swiecy_zielonej(float& robocze_low, float& robocze_high, float& r
 
 									if (nr_swiecy == nr_indeksu) {
 										kolory_os_wartosci[Y] = true;
-										niebieski_wartosci[Y] = true;
+										if (czerwona == false) {
+											niebieski_wartosci[Y] = true;
+										}
+										else {
+											niebieski_wartosci[Y] = false;
+										}
 									}
 
 									kolory[nr_indeksu][Y] = true;
-									zielony[nr_indeksu][Y] = true;
+									if (czerwona == false) {
+										zielony[nr_indeksu][Y] = true;
+									}
+									else {
+										zielony[nr_indeksu][Y] = false;
+									}
 
 									koniec = true;
 								}
@@ -694,11 +702,21 @@ void tworzenie_swiecy_zielonej(float& robocze_low, float& robocze_high, float& r
 
 									if (nr_swiecy == nr_indeksu) {
 										kolory_os_wartosci[Y] = true;
-										niebieski_wartosci[Y] = true;
+										if (czerwona == false) {
+											niebieski_wartosci[Y] = true;
+										}
+										else {
+											niebieski_wartosci[Y] = false;
+										}
 									}
 
 									kolory[nr_indeksu][Y] = true;
-									zielony[nr_indeksu][Y] = true;
+									if (czerwona == false) {
+										zielony[nr_indeksu][Y] = true;
+									}
+									else {
+										zielony[nr_indeksu][Y] = false;
+									}
 
 									robocze_low = robocze_low - podzialka;
 									robocze_close = robocze_close - podzialka;
@@ -728,11 +746,21 @@ void tworzenie_swiecy_zielonej(float& robocze_low, float& robocze_high, float& r
 
 							if (nr_swiecy == nr_indeksu) {
 								kolory_os_wartosci[Y] = true;
-								niebieski_wartosci[Y] = true;
+								if (czerwona == false) {
+									niebieski_wartosci[Y] = true;
+								}
+								else {
+									niebieski_wartosci[Y] = false;
+								}
 							}
 
 							kolory[nr_indeksu][Y] = true;
-							zielony[nr_indeksu][Y] = true;
+							if (czerwona == false) {
+								zielony[nr_indeksu][Y] = true;
+							}
+							else {
+								zielony[nr_indeksu][Y] = false;
+							}
 
 							robocze_low = robocze_low - podzialka;
 							robocze_close = robocze_close - podzialka;
@@ -776,11 +804,21 @@ void tworzenie_swiecy_zielonej(float& robocze_low, float& robocze_high, float& r
 
 					if (nr_swiecy == nr_indeksu) {
 						kolory_os_wartosci[Y] = true;
-						niebieski_wartosci[Y] = true;
+						if (czerwona == false) {
+							niebieski_wartosci[Y] = true;
+						}
+						else {
+							niebieski_wartosci[Y] = false;
+						}
 					}
 
 					kolory[nr_indeksu][Y] = true;
-					zielony[nr_indeksu][Y] = true;
+					if (czerwona == false) {
+						zielony[nr_indeksu][Y] = true;
+					}
+					else {
+						zielony[nr_indeksu][Y] = false;
+					}
 
 					robocze_low = robocze_low - podzialka;
 					robocze_close = robocze_close - podzialka;
@@ -797,185 +835,7 @@ void tworzenie_swiecy_zielonej(float& robocze_low, float& robocze_high, float& r
 		}
 
 		if (koniec == false) {
-			robocze_low = robocze_low - podzialka;
-			robocze_close = robocze_close - podzialka;
-			robocze_open = robocze_open - podzialka;
-			robocze_high = robocze_high - podzialka;
 
-			robocze_low = round(robocze_low * 10) / 10;
-			robocze_close = round(robocze_close * 10) / 10;
-			robocze_open = round(robocze_open * 10) / 10;
-			robocze_high = round(robocze_high * 10) / 10;
-			Y -= 1;
-		}
-	}
-}
-
-void tworzenie_swiecy_czerwonej(float& robocze_low, float& robocze_high, float& robocze_close, float& robocze_open, int wysokosc, float podzialka, int nr_indeksu, char obiekty[20][50][100], bool kolory[200][200], bool zielony[200][200], int nr_swiecy, bool kolory_os_wartosci[100], bool niebieski_wartosci[100]) {
-
-	int Y = wysokosc;
-	int ostatni_Y_ciala = -1;
-	bool koniec = false;
-	bool poczatek = true;
-
-	if (robocze_open > robocze_high) {
-		robocze_high = robocze_open;
-	}
-
-	while (koniec == false) {
-
-		if (robocze_low >= 0 && robocze_low < podzialka) {
-
-			while (koniec == false) {
-
-				if (robocze_close >= 0 && robocze_close < podzialka) {
-
-					while (koniec == false) {
-
-						ostatni_Y_ciala = Y;
-
-						if (robocze_open >= 0 && robocze_open < podzialka) {
-
-							while (koniec == false) {
-
-								if (robocze_high >= 0 && robocze_high < podzialka) {
-
-									if (nr_indeksu < 50) {
-										obiekty[0][nr_indeksu][Y] = char(435);
-									}
-									else if (nr_indeksu < 100) {
-										obiekty[1][nr_indeksu - 50][Y] = char(435);
-									}
-									else if (nr_indeksu < 150) {
-										obiekty[2][nr_indeksu - 100][Y] = char(435);
-									}
-
-									if (nr_swiecy == nr_indeksu) {
-										kolory_os_wartosci[Y] = true;
-										niebieski_wartosci[Y] = false;
-									}
-
-									kolory[nr_indeksu][Y] = true;
-									zielony[nr_indeksu][Y] = false;
-
-									koniec = true;
-								}
-
-								if (koniec == false) {
-
-									if (nr_indeksu < 50) {
-										obiekty[0][nr_indeksu][Y] = char(435);
-									}
-									else if (nr_indeksu < 100) {
-										obiekty[1][nr_indeksu - 50][Y] = char(435);
-									}
-									else if (nr_indeksu < 150) {
-										obiekty[2][nr_indeksu - 100][Y] = char(435);
-									}
-
-									if (nr_swiecy == nr_indeksu) {
-										kolory_os_wartosci[Y] = true;
-										niebieski_wartosci[Y] = false;
-									}
-
-									kolory[nr_indeksu][Y] = true;
-									zielony[nr_indeksu][Y] = false;
-
-									robocze_low = robocze_low - podzialka;
-									robocze_close = robocze_close - podzialka;
-									robocze_open = robocze_open - podzialka;
-									robocze_high = robocze_high - podzialka;
-
-									robocze_low = round(robocze_low * 10) / 10;
-									robocze_close = round(robocze_close * 10) / 10;
-									robocze_open = round(robocze_open * 10) / 10;
-									robocze_high = round(robocze_high * 10) / 10;
-									Y -= 1;
-								}
-							}
-						}
-
-						if (koniec == false) {
-							if (nr_indeksu < 50) {
-								obiekty[0][nr_indeksu][Y] = char(475);
-							}
-							else if (nr_indeksu < 100) {
-								obiekty[1][nr_indeksu - 50][Y] = char(475);
-							}
-							else if (nr_indeksu < 150) {
-								obiekty[2][nr_indeksu - 100][Y] = char(475);
-							}
-
-							if (nr_swiecy == nr_indeksu) {
-								kolory_os_wartosci[Y] = true;
-								niebieski_wartosci[Y] = false;
-							}
-
-							kolory[nr_indeksu][Y] = true;
-							zielony[nr_indeksu][Y] = false;
-
-							robocze_low = robocze_low - podzialka;
-							robocze_close = robocze_close - podzialka;
-							robocze_open = robocze_open - podzialka;
-							robocze_high = robocze_high - podzialka;
-
-							robocze_low = round(robocze_low * 10) / 10;
-							robocze_close = round(robocze_close * 10) / 10;
-							robocze_open = round(robocze_open * 10) / 10;
-							robocze_high = round(robocze_high * 10) / 10;
-
-							Y -= 1;
-						}
-
-						if (koniec == true && ostatni_Y_ciala != -1) {
-							if (nr_indeksu < 50) {
-								obiekty[0][nr_indeksu][ostatni_Y_ciala] = char(475);
-							}
-							else if (nr_indeksu < 100) {
-								obiekty[1][nr_indeksu - 50][ostatni_Y_ciala] = char(475);
-							}
-							else if (nr_indeksu < 150) {
-								obiekty[2][nr_indeksu - 100][ostatni_Y_ciala] = char(475);
-							}
-						}
-					}
-				}
-
-				if (koniec == false) {
-
-					if (nr_indeksu < 50) {
-						obiekty[0][nr_indeksu][Y] = char(435);
-					}
-					else if (nr_indeksu < 100) {
-						obiekty[1][nr_indeksu - 50][Y] = char(435);
-					}
-					else if (nr_indeksu < 150) {
-						obiekty[2][nr_indeksu - 100][Y] = char(435);
-					}
-
-					if (nr_swiecy == nr_indeksu) {
-						kolory_os_wartosci[Y] = true;
-						niebieski_wartosci[Y] = false;
-					}
-
-					kolory[nr_indeksu][Y] = true;
-					zielony[nr_indeksu][Y] = false;
-
-					robocze_low = robocze_low - podzialka;
-					robocze_close = robocze_close - podzialka;
-					robocze_open = robocze_open - podzialka;
-					robocze_high = robocze_high - podzialka;
-
-					robocze_low = round(robocze_low * 10) / 10;
-					robocze_close = round(robocze_close * 10) / 10;
-					robocze_open = round(robocze_open * 10) / 10;
-					robocze_high = round(robocze_high * 10) / 10;
-					Y -= 1;
-				}
-			}
-		}
-
-		if (koniec == false) {
 			robocze_low = robocze_low - podzialka;
 			robocze_close = robocze_close - podzialka;
 			robocze_open = robocze_open - podzialka;
@@ -1002,6 +862,8 @@ void uzupelnianie_wykresu(float open[7][1000], float high[7][1000], float low[7]
 	int pozycja = indeksy_konca_poczatku[0];
 	int licznik = 0;
 
+	bool czerwona = true;
+
 	for (int i = 0; i <= szerokosc * odczyty; i++) {
 
 		if (pozycja == 1000) {
@@ -1021,11 +883,6 @@ void uzupelnianie_wykresu(float open[7][1000], float high[7][1000], float low[7]
 	}
 
 	najmniejszy_low = round(najmniejszy_low * 10) / 10;
-
-	//std::cout << "sprawdzone miejsca: " << licznik << std::endl;
-	//std::cout << "Min: " << najmniejszy_low << std::endl;
-	//std::cout << "Max: " << najwiekszy_high << std::endl;
-	//std::cout << "roznica: " << najwiekszy_high - najmniejszy_low << std::endl << std::endl;
 
 	podzialka = (najwiekszy_high - najmniejszy_low) / wysokosc;
 
@@ -1161,13 +1018,14 @@ void uzupelnianie_wykresu(float open[7][1000], float high[7][1000], float low[7]
 			}
 		}
 
+
 		if (nr_indeksu_backup - odczyty + 1 < 0) {
 
 			if (open[rozszerzenie - 1][1000 + (nr_indeksu_backup - odczyty + 1)] < close[rozszerzenie][nr_indeksu_backup]) {
-				tworzenie_swiecy_zielonej(robocze_low, robocze_high, robocze_close, robocze_open, wysokosc, podzialka, nr_indeksu, obiekty, kolory, zielony, nr_swiecy, kolory_os_wartosci, niebieski_wartosci);
+				tworzenie_swiecy(robocze_low, robocze_high, robocze_close, robocze_open, wysokosc, podzialka, nr_indeksu, obiekty, kolory, zielony, nr_swiecy, kolory_os_wartosci, niebieski_wartosci, false);
 			}
 			else {
-				tworzenie_swiecy_czerwonej(robocze_low, robocze_high, robocze_close, robocze_open, wysokosc, podzialka, nr_indeksu, obiekty, kolory, zielony, nr_swiecy, kolory_os_wartosci, niebieski_wartosci);
+				tworzenie_swiecy(robocze_low, robocze_high, robocze_close, robocze_open, wysokosc, podzialka, nr_indeksu, obiekty, kolory, zielony, nr_swiecy, kolory_os_wartosci, niebieski_wartosci, true);
 			}
 		}
 
@@ -1175,10 +1033,10 @@ void uzupelnianie_wykresu(float open[7][1000], float high[7][1000], float low[7]
 
 			if (open[rozszerzenie][nr_indeksu_backup - odczyty + 1] < close[rozszerzenie][nr_indeksu_backup]) {
 
-				tworzenie_swiecy_zielonej(robocze_low, robocze_high, robocze_close, robocze_open, wysokosc, podzialka, nr_indeksu, obiekty, kolory, zielony, nr_swiecy, kolory_os_wartosci, niebieski_wartosci);
+				tworzenie_swiecy(robocze_low, robocze_high, robocze_close, robocze_open, wysokosc, podzialka, nr_indeksu, obiekty, kolory, zielony, nr_swiecy, kolory_os_wartosci, niebieski_wartosci, false);
 			}
 			else {
-				tworzenie_swiecy_czerwonej(robocze_low, robocze_high, robocze_close, robocze_open, wysokosc, podzialka, nr_indeksu, obiekty, kolory, zielony, nr_swiecy, kolory_os_wartosci, niebieski_wartosci);
+				tworzenie_swiecy(robocze_low, robocze_high, robocze_close, robocze_open, wysokosc, podzialka, nr_indeksu, obiekty, kolory, zielony, nr_swiecy, kolory_os_wartosci, niebieski_wartosci, true);
 			}
 		}
 	}
@@ -1799,7 +1657,7 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 				std::cout << pierwszy_rok << "-" << pierwszy_miesiac << "-" << pierwszy_dzien << std::endl;
 
 				if (indeksy_konca_poczatku[0] + zakres_dat < 1000) {
-					std::cout << rok[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat ] << "-" << miesiac[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat] << "-" << dzien[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat ] << std::endl;
+					std::cout << rok[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat] << "-" << miesiac[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat] << "-" << dzien[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat] << std::endl;
 					ostatni_rok = rok[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat];
 					ostatni_miesiac = miesiac[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat];
 					ostatni_dzien = dzien[rozszerzenia_konca_poczatku[0]][indeksy_konca_poczatku[0] + zakres_dat];
@@ -1813,7 +1671,7 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 					indeksy_konca_poczatku[1] = zakres_dat - 1000;
 					rozszerzenia_konca_poczatku[1] = rozszerzenia_konca_poczatku[0] + 1;
 				}
-				else if(indeksy_konca_poczatku[0] + zakres_dat < 3000) {
+				else if (indeksy_konca_poczatku[0] + zakres_dat < 3000) {
 					std::cout << rok[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000] << "-" << miesiac[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000] << "-" << dzien[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000] << std::endl;
 					ostatni_rok = rok[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000];
 					ostatni_miesiac = miesiac[rozszerzenia_konca_poczatku[0] + 2][indeksy_konca_poczatku[0] + zakres_dat - 2000];
