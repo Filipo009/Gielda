@@ -1,2 +1,2 @@
 # Gielda
- 2 projekt na Politechnike
+Program tworzy wykresy świecowe na podstawie danych z pliku
