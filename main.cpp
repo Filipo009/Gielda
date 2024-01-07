@@ -274,9 +274,6 @@ void wczytywanie_danych(int rok[][1000], int miesiac[][1000], int dzien[][1000],
 				zaok_high[rozszerzenie][indeks] = round(high[rozszerzenie][indeks] * 10) / 10;
 				zaok_low[rozszerzenie][indeks] = round(low[rozszerzenie][indeks] * 10) / 10;
 				zaok_close[rozszerzenie][indeks] = round(close[rozszerzenie][indeks] * 10) / 10;
-
-				//std::cout << rozszerzenie << " " << indeks << " " << rok[rozszerzenie][indeks] << "-" << miesiac[rozszerzenie][indeks] << "-" << dzien[rozszerzenie][indeks] << " " << open[rozszerzenie][indeks] << " " << high[rozszerzenie][indeks] << " " << low[rozszerzenie][indeks] << " " << close[rozszerzenie][indeks] << " " << volume[rozszerzenie][indeks];
-				//std::cout << " Zaokraglone: " << rok[rozszerzenie][indeks] << "-" << miesiac[rozszerzenie][indeks] << "-" << dzien[rozszerzenie][indeks] << " " << zaok_open[rozszerzenie][indeks] << " " << zaok_high[rozszerzenie][indeks] << " " << zaok_low[rozszerzenie][indeks] << " " << zaok_close[rozszerzenie][indeks] << std::endl;
 			}
 		}
 	}
@@ -296,9 +293,6 @@ void rysowanie_wykresu(char obiekty[20][50][100], bool kolory[200][200], bool zi
 		napis_wartosci = round(napis_wartosci * 10) / 10;
 
 		int proba_kontrolna = round(napis_wartosci * 10);
-
-		//std::cout << "Napis wartosci" << napis_wartosci << " " << napis_wartosci - round(napis_wartosci) << std::endl;
-		//std::cout << proba_kontrolna << std::endl;
 
 		if (kolory_os_wartosci[y] == true) {
 			std::cout << char(186);
@@ -1516,97 +1510,13 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 
 			system("cls");
 
+			
 
-			int nr_wyboru = 1;
+			std::cout << "Podaj z ilu odczytow ma skladac sie swieca: ";
 
 			while (true) {
-				std::cout << "By zatwierdzić wybrany tryb wpis dowolna liczbe" << std::endl;
-				std::cout << "W trybie 1. mozna od razu wpisac wartosc" << std::endl;
-				std::cout << "Zmiana trybu '-1'" << std::endl;
-				std::cout << "Tryb odczytow:" << std::endl << std::endl;
-
-				std::cout << char(201) << char(205) << char(205) << char(205) << char(203);
-				for (int i = 0; i < 20; i++) {
-					std::cout << char(205);
-				}
-				std::cout << char(187) << std::endl;
-
-				for (int i = 1; i <= 3; i++) {
-
-					if (nr_wyboru == i) {
-						std::cout << "| * |";
-					}
-					else {
-						std::cout << "|   |";
-					}
-
-					if (i == 1) {
-						std::cout << " 1. niestandardowe  |" << std::endl;
-					}
-					else if (i == 2) {
-						std::cout << " 2. tryb miesieczny |" << std::endl;
-					}
-					else {
-						std::cout << " 3. tryb tygodniowy |" << std::endl;
-					}
-
-					if (i != 3) {
-						std::cout << char(204) << char(205) << char(205) << char(205) << char(206);
-						for (int i = 0; i < 20; i++) {
-							std::cout << char(205);
-						}
-						std::cout << char(185) << std::endl;
-					}
-				}
-
-				std::cout << char(200) << char(205) << char(205) << char(205) << char(202);
-				for (int i = 0; i < 20; i++) {
-					std::cout << char(205);
-				}
-				std::cout << char(188) << std::endl;
-
-				std::cout << std::endl << "Wpisz tryb: ";
-				while (true) {
-					if (std::cin >> odczyty) {
-						break;
-					}
-					else {
-						std::cin.clear();
-						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-						std::cout << "Nieprawidlowe dane. Wprowadz liczbe jeszcze raz." << std::endl;
-					}
-				}
-
-				if (odczyty == -1) {
-					nr_wyboru += 1;
-					if (nr_wyboru > 3) {
-						nr_wyboru = 1;
-					}
-				}
-
-				else if (nr_wyboru == 1) {
-					break;
-				}
-
-				else if (nr_wyboru == 2) {
-					odczyty = 20;
-					break;
-				}
-
-				else {
-					odczyty = 5;
-					break;
-				}
-
-				system("cls");
-			}
-
-			system("cls");
-
-			while (odczyty > 31 || odczyty < 1) {
-				std::cout << "Liczba odczytow musi nalezec do przedzialu [1-31]: " << std::endl;
-
 				if (std::cin >> odczyty) {
+					break;
 				}
 				else {
 					std::cin.clear();
@@ -1617,22 +1527,12 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 
 			while (odczyty > zakres_dat) {
 				std::cout << "Podane odczyty sa wieksze niz zakres danych, prosze podac odczyty mniejsze od: " << odczyty + 1 << std::endl;
-				while (true) {
-					if (std::cin >> odczyty) {
-						break;
-					}
-					else {
-						std::cin.clear();
-						std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
-						std::cout << "Nieprawidlowe dane. Wprowadz liczbe jeszcze raz." << std::endl;
-					}
-				}
 			}
 
 
-			if (zakres_dat % odczyty != 0 && odczyty == 1) {
+			if (zakres_dat % odczyty != 0) {
 				std::cout << std::endl << "Zakres dat nie jest podzelny przez " << odczyty << ", czy jestes pewny tego wyboru?" << std::endl;
-				std::cout << "Ostatnia swieca w tym wykresie moze skladac sie z mniejszej liczby odczytow." << std::endl;
+				std::cout << "Ostatnia swieca w tym wykresie moze skladac sie z mniejscej liczby odczytow." << std::endl;
 				std::cout << "By potwierdzic wpisz ta sama wartosc, mozesz takze zmienic ilosc odczytow." << std::endl << std::endl;
 				std::cout << "Podaj z ilu odczytow ma skladac sie swieca: ";
 				while (true) {
@@ -1645,6 +1545,12 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 						std::cout << "Nieprawidlowe dane. Wprowadz liczbe jeszcze raz." << std::endl;
 					}
 				}
+			}
+
+
+			if ( odczyty < 1 || odczyty > 31) {
+				std::cout << "Liczba spoza zakresu 1-31, zmieniono liczbe odczytow na: 1" << std::endl;
+				odczyty = 1;
 			}
 
 			szerokosc = round(zakres_dat / odczyty);
