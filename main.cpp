@@ -1526,7 +1526,7 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 			}
 
 			while (odczyty > zakres_dat) {
-				std::cout << "Podane odczyty sa wieksze niz zakres danych, prosze podac odczyty mniejsze od: " << odczyty + 1 << std::endl;
+				std::cout << "Podane odczyty sa wieksze niz zakres danych, prosze podac odczyty mniejsze od: " << odczyty << std::endl;
 				while (true) {
 					if (std::cin >> odczyty) {
 						break;
