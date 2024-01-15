@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <fstream>
 
@@ -1510,7 +1511,7 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 
 			system("cls");
 
-			
+
 
 			std::cout << "Podaj z ilu odczytow ma skladac sie swieca: ";
 
@@ -1558,7 +1559,7 @@ void konfiguracja(int& wysokosc, int& szerokosc, int& odczyty, int& pierwszy_rok
 			}
 
 
-			if ( odczyty < 1 || odczyty > 31) {
+			if (odczyty < 1 || odczyty > 31) {
 				std::cout << "Liczba spoza zakresu 1-31, zmieniono liczbe odczytow na: 1" << std::endl;
 				odczyty = 1;
 			}
@@ -1832,11 +1833,29 @@ void program(char& ruch_uzytkownika) {
 
 				if (ruch_uzytkownika == 'i' || ruch_uzytkownika == 'I') {
 					std::cout << "Wpisz indeks swiecy: " << std::endl;
-					std::cin >> nr_swiecy;
+					while (true) {
+						if (std::cin >> nr_swiecy) {
+							break;
+						}
+						else {
+							std::cin.clear();
+							std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+							std::cout << "Nieprawidlowe dane. Wprowadz liczbe jeszcze raz." << std::endl;
+						}
+					}
 
 					while (nr_swiecy < 1 || nr_swiecy > szerokosc) {
 						std::cout << "Indeks swiecy musi byc liczba z przedzialu od 1 do " << szerokosc << std::endl;
-						std::cin >> nr_swiecy;
+						while (true) {
+							if (std::cin >> nr_swiecy) {
+								break;
+							}
+							else {
+								std::cin.clear();
+								std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+								std::cout << "Nieprawidlowe dane. Wprowadz liczbe jeszcze raz." << std::endl;
+							}
+						}
 					}
 
 					system("cls");
